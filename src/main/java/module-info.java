@@ -4,12 +4,7 @@ module com.example.onestopuiu {
     requires transitive javafx.graphics;
     requires transitive javafx.base;
     requires transitive java.sql;
-    requires mysql.connector.j;
-    requires org.controlsfx.controls;
-    requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.ikonli.fontawesome5;
-    requires com.google.gson;
-    requires okhttp3;
+    requires java.naming;
     requires java.desktop;
 
     opens com.example.onestopuiu to javafx.fxml;

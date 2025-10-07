@@ -8,7 +8,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -18,21 +17,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class FoodItemsManagerController extends AdminBaseController {
     @FXML private TextField nameField;
@@ -59,7 +52,8 @@ public class FoodItemsManagerController extends AdminBaseController {
     private final FoodItemDAO foodItemDAO = new FoodItemDAO();
     private FoodItem selectedItem;
     private String selectedImagePath;
-    private static final String UPLOAD_DIR = "src/main/resources/com/example/onestopuiu/uploads/";
+    // Upload directory - commented out as not currently used
+    // private static final String UPLOAD_DIR = "src/main/resources/com/example/onestopuiu/uploads/";
 
     @Override
     protected void onInitialize() {

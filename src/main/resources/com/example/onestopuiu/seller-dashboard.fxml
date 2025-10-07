@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:id="root" spacing="20" style="-fx-background-color: white;" stylesheets="@styles.css" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.onestopuiu.controller.SellerDashboardController">
+<VBox fx:id="root" spacing="20" style="-fx-background-color: white;" stylesheets="@styles-simple.css" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.onestopuiu.controller.SellerDashboardController">
     
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />

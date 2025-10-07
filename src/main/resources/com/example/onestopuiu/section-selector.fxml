@@ -7,58 +7,113 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Text?>
 
 <BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
            fx:controller="com.example.onestopuiu.controller.SectionSelectorController"
-           stylesheets="@styles.css" style="-fx-background-color: #ffffff;">
+           stylesheets="@styles-simple.css" styleClass="section-selector-root">
     
     <!-- Header -->
     <top>
-        <VBox styleClass="header-container">
-            <HBox alignment="CENTER_LEFT" spacing="16">
+        <VBox styleClass="section-header" spacing="20" alignment="CENTER">
+            <!-- Navigation Bar -->
+            <HBox alignment="CENTER_LEFT" spacing="20" styleClass="nav-bar">
                 <Button fx:id="myOrdersButton" onAction="#handleMyOrders" 
-                       text="My Orders" styleClass="secondary-button"/>
+                       text="📋 My Orders" styleClass="nav-button"/>
                 
                 <Region HBox.hgrow="ALWAYS"/>
                 
-                <Label text="Become a seller" styleClass="form-label"/>
-                <Button fx:id="becomeSellerButton" onAction="#handleBecomeSeller" 
-                       text="Apply" styleClass="secondary-button"/>
+                <!-- Seller Application Section -->
+                <VBox alignment="CENTER_RIGHT" spacing="5">
+                    <Label text="Want to earn money? Join as a food seller" styleClass="seller-prompt"/>
+                    <Button fx:id="becomeSellerButton" onAction="#handleBecomeSeller" 
+                           text="🏪 Apply Now" styleClass="seller-apply-button"/>
+                </VBox>
             </HBox>
+            
+            <!-- Welcome Section -->
+            <VBox alignment="CENTER" spacing="15">
+                <Text text="👋" styleClass="welcome-emoji"/>
+                <Label fx:id="welcomeLabel" styleClass="welcome-title"/>
+                <Text text="What would you like to do today?" styleClass="welcome-subtitle"/>
+            </VBox>
         </VBox>
     </top>
     
     <!-- Main Content -->
     <center>
-        <VBox alignment="CENTER" spacing="48" style="-fx-padding: 80px 40px;">
+        <VBox alignment="CENTER" spacing="40" styleClass="main-content">
             
-            <!-- Welcome -->
-            <VBox alignment="CENTER" spacing="8">
-                <Label fx:id="welcomeLabel" styleClass="welcome-label"/>
-                <Label text="Select a section" styleClass="form-label"/>
+            <!-- Food Ordering Card -->
+            <VBox styleClass="section-card" spacing="20" alignment="CENTER"
+                  onMouseClicked="#handleCanteenSection">
+                
+                <Text text="🍽️" styleClass="card-icon"/>
+                
+                <VBox alignment="CENTER" spacing="8">
+                    <Text text="Order Food" styleClass="card-title"/>
+                    <Text text="Browse delicious meals from university canteen" 
+                          styleClass="card-description"/>
+                    <Text text="Fresh • Fast • Affordable" styleClass="card-features"/>
+                </VBox>
+                
+                <Button fx:id="canteenButton" onAction="#handleCanteenSection" 
+                       text="🚀 Start Ordering" styleClass="card-action-button"/>
+                
+                <!-- Stats -->
+                <HBox alignment="CENTER" spacing="20">
+                    <VBox alignment="CENTER" spacing="2">
+                        <Text text="150+" styleClass="stat-number"/>
+                        <Text text="Items" styleClass="stat-label"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="2">
+                        <Text text="4.8⭐" styleClass="stat-number"/>
+                        <Text text="Rating" styleClass="stat-label"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="2">
+                        <Text text="₹50+" styleClass="stat-number"/>
+                        <Text text="Min Order" styleClass="stat-label"/>
+                    </VBox>
+                </HBox>
             </VBox>
             
-            <!-- Section Button -->
-            <Button fx:id="canteenButton" onAction="#handleCanteenSection" 
-                   styleClass="section-button" prefWidth="240" prefHeight="240">
-                <graphic>
-                    <VBox alignment="CENTER" spacing="16">
-                        <Text styleClass="emoji-text" text="🥘"/>
-                        <Label text="Order Food" style="-fx-font-size: 16px; -fx-font-weight: 400;"/>
-                    </VBox>
-                </graphic>
-            </Button>
+            <!-- Quick Stats -->
+            <HBox alignment="CENTER" spacing="40" styleClass="quick-stats">
+                <VBox alignment="CENTER" spacing="5">
+                    <Text text="🎯" styleClass="stat-emoji"/>
+                    <Text text="Fast Delivery" styleClass="stat-text"/>
+                    <Text text="15-20 mins" styleClass="stat-detail"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="5">
+                    <Text text="💳" styleClass="stat-emoji"/>
+                    <Text text="Easy Payment" styleClass="stat-text"/>
+                    <Text text="Multiple options" styleClass="stat-detail"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="5">
+                    <Text text="🛡️" styleClass="stat-emoji"/>
+                    <Text text="Safe &amp; Secure" styleClass="stat-text"/>
+                    <Text text="Trusted platform" styleClass="stat-detail"/>
+                </VBox>
+                <VBox alignment="CENTER" spacing="5">
+                    <Text text="📞" styleClass="stat-emoji"/>
+                    <Text text="24/7 Support" styleClass="stat-text"/>
+                    <Text text="Always here" styleClass="stat-detail"/>
+                </VBox>
+            </HBox>
             
         </VBox>
     </center>
     
     <!-- Footer -->
     <bottom>
-        <VBox alignment="CENTER" style="-fx-padding: 20px;">
-            <Button text="Log Out" onAction="#handleLogout" 
-                   styleClass="secondary-button" prefWidth="120"/>
-        </VBox>
+        <HBox alignment="CENTER" spacing="20" styleClass="section-footer">
+            <Button text="🏠 Home" onAction="#handleHome" styleClass="footer-button"/>
+            <Button text="❓ Help" onAction="#handleHelp" styleClass="footer-button"/>
+            <Button text="⚙️ Settings" onAction="#handleSettings" styleClass="footer-button"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🚪 Log Out" onAction="#handleLogout" styleClass="logout-button"/>
+        </HBox>
     </bottom>
     
 </BorderPane>

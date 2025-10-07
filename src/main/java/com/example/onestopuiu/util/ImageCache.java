@@ -19,7 +19,7 @@ public class ImageCache {
         // Load default images once at startup
         Image defaultFood = null;
         try {
-            defaultFood = new Image(ImageCache.class.getResourceAsStream("/com/example/onestopuiu/images/default-food.png"));
+            defaultFood = new Image(ImageCache.class.getResourceAsStream("/com/example/onestopuiu/images/default-item.png"));
         } catch (Exception e) {
             System.err.println("Error loading default images: " + e.getMessage());
         }

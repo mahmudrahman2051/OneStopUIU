@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.Screen;
 import javafx.geometry.Rectangle2D;
-import javafx.stage.Modality;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,7 +44,10 @@ public class SectionSelectorController extends CustomerBaseController {
 
     public void initData(User user) {
         this.currentUser = user;
-        welcomeLabel.setText("Welcome, " + user.getUsername() + "!");
+        
+        // Set personalized welcome message
+        String timeOfDay = getTimeOfDay();
+        welcomeLabel.setText(timeOfDay + ", " + user.getUsername() + "!");
         
         // If user is already a seller or admin, hide the become seller button and label
         if (user.getRole().equals("SELLER") || user.getRole().equals("ADMIN")) {
@@ -59,6 +61,17 @@ public class SectionSelectorController extends CustomerBaseController {
         checkSellerRequestStatus();
     }
     
+    private String getTimeOfDay() {
+        int hour = java.time.LocalTime.now().getHour();
+        if (hour < 12) {
+            return "Good Morning";
+        } else if (hour < 17) {
+            return "Good Afternoon";
+        } else {
+            return "Good Evening";
+        }
+    }
+    
     private void checkSellerRequestStatus() {
         if (currentUser == null) return;
         
@@ -68,26 +81,24 @@ public class SectionSelectorController extends CustomerBaseController {
                 SellerRequest request = requestOpt.get();
                 switch (request.getStatus()) {
                     case "pending":
-                        becomeSellerButton.setText("Pending");
+                        becomeSellerButton.setText("🔄 Pending Review");
                         becomeSellerButton.setDisable(true);
-                        becomeSellerLabel.setVisible(true);
+                        becomeSellerButton.getStyleClass().add("pending-button");
                         break;
                     case "approved":
-                        becomeSellerButton.setText("Seller Dashboard");
+                        becomeSellerButton.setText("🏪 Seller Dashboard");
                         becomeSellerButton.setDisable(false);
-                        becomeSellerLabel.setVisible(false);
                         break;
                     case "rejected":
-                        becomeSellerButton.setText("Rejected");
+                        becomeSellerButton.setText("❌ Application Rejected");
                         becomeSellerButton.setDisable(true);
-                        becomeSellerLabel.setVisible(false);
+                        becomeSellerButton.getStyleClass().add("rejected-button");
                         break;
                 }
             } else {
                 // No request, show default state
-                becomeSellerButton.setText("click here");
+                becomeSellerButton.setText("🏪 Apply Now");
                 becomeSellerButton.setDisable(false);
-                becomeSellerLabel.setVisible(true);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -107,6 +118,34 @@ public class SectionSelectorController extends CustomerBaseController {
     @FXML
     protected void handleMyOrders() {
         loadSection("my-orders.fxml");
+    }
+    
+    @FXML
+    protected void handleHome() {
+        // Refresh current page
+        loadSection("section-selector.fxml");
+    }
+    
+    @FXML
+    protected void handleHelp() {
+        showAlert(Alert.AlertType.INFORMATION, "Help & Support", 
+                  "OneStopUIU Support:\n\n" +
+                  "📞 Phone: +880-1234-567890\n" +
+                  "📧 Email: support@onestopuiu.com\n" +
+                  "🕒 Hours: 9 AM - 6 PM (Mon-Fri)\n\n" +
+                  "For technical issues or account help,\nplease contact our support team.");
+    }
+    
+    @FXML
+    protected void handleSettings() {
+        showAlert(Alert.AlertType.INFORMATION, "Settings", 
+                  "Settings feature coming soon!\n\n" +
+                  "You'll be able to:\n" +
+                  "• Update profile information\n" +
+                  "• Change password\n" +
+                  "• Notification preferences\n" +
+                  "• Payment methods\n\n" +
+                  "Stay tuned for updates!");
     }
     
     @FXML

@@ -1,13 +1,8 @@
 package com.example.onestopuiu.controller;
 
-import com.example.onestopuiu.util.ChatLauncher;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import java.io.*;
 import java.net.Socket;
 
@@ -21,7 +16,7 @@ public class ChatController {
     private BufferedReader in;
     private Socket socket;
     private String username;
-    private boolean isSeller;
+    // private boolean isSeller; // Not currently used
     private String chatId;
 
     public void initialize() {
@@ -33,7 +28,7 @@ public class ChatController {
     public void setUserInfo(String username, boolean isSeller, String chatId) {
         System.out.println("Setting user info - Username: " + username + ", IsSeller: " + isSeller + ", ChatId: " + chatId);
         this.username = username;
-        this.isSeller = isSeller;
+        // this.isSeller = isSeller; // Not currently used
         this.chatId = chatId;
         connectToServer();
     }

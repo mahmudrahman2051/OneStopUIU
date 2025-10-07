@@ -1,7 +1,6 @@
 package com.example.onestopuiu.dao;
 
 import com.example.onestopuiu.model.SellerRequest;
-import com.example.onestopuiu.model.User;
 import com.example.onestopuiu.util.DatabaseConnection;
 
 import java.sql.*;

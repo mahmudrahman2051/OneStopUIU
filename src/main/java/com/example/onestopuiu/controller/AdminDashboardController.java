@@ -3,7 +3,6 @@ package com.example.onestopuiu.controller;
 import com.example.onestopuiu.dao.FoodItemDAO;
 import com.example.onestopuiu.dao.FoodOrderDAO;
 import com.example.onestopuiu.model.FoodItem;
-import com.example.onestopuiu.model.User;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -21,7 +20,6 @@ import javafx.stage.Stage;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-import javafx.beans.value.ChangeListener;
 import javafx.application.Platform;
 
 import java.io.IOException;

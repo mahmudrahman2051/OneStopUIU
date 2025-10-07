@@ -1,6 +1,229 @@
-# OneStopUIU
+# 🎯 OneStopUIU - University Management System
 
-OneStopUIU is a minimal, clean Management System for handling Canteen operations within United International University (UIU). The system provides a unified platform for managing food orders with separate interfaces for customers and administrators, featuring a modern minimal design with limited color palette.
+> **OneStopUIU** is a comprehensive JavaFX-based management system designed for **United International University (UIU)**. The system provides a unified platform for managing canteen operations with separate interfaces for customers, sellers, and administrators.
+
+---
+
+## 🚀 **QUICK START FOR PRESENTATION**
+
+### **Option 1: IntelliJ IDEA (Recommended)**
+1. Open project in IntelliJ IDEA 2025.1
+2. Run configuration: **"OneStopUIU Application"** 
+3. Click ▶️ **Run**
+
+### **Option 2: Command Line**
+```bash
+# Windows PowerShell
+.\mvnw.cmd javafx:run
+
+# Or use the presentation batch file
+.\run-presentation.bat
+```
+
+---
+
+## 🎭 **DEMO ACCOUNTS FOR PRESENTATION**
+
+| **Role** | **Username** | **Password** | **Purpose** |
+|----------|--------------|--------------|-------------|
+| 👑 **Admin** | `admin` | `admin123` | System administration & management |
+| 👤 **Customer** | `customer1` | `pass123` | Food ordering & tracking |
+| 👤 **Student** | `student1` | `student123` | Regular student user |
+| 🏪 **Seller** | `seller1` | `seller123` | Food item management |
+
+---
+
+## ✨ **KEY FEATURES TO DEMONSTRATE**
+
+### 🍽️ **Canteen Management**
+- **Real-time menu browsing** with categories (breakfast, lunch, snacks)
+- **Smart ordering system** with stock validation
+- **Order tracking** (pending → completed → delivered)
+- **Admin dashboard** with sales analytics
+- **Inventory management** with low-stock alerts
+
+### 👥 **User Management**  
+- **Role-based access control** (Customer/Seller/Admin)
+- **Secure authentication** with proper session management
+- **User profile management** with role-specific features
+
+### 📊 **Analytics & Reporting**
+- **Real-time sales dashboard** with daily/weekly views
+- **Stock level monitoring** with automatic alerts
+- **Order history tracking** with detailed reports
+- **User activity analytics** for business insights
+
+---
+
+## 🏗️ **Technical Architecture**
+
+### **Frontend**
+- **JavaFX 17.0.2** - Modern UI framework
+- **FXML** - Declarative UI layouts
+- **CSS styling** - Clean, minimal design
+- **Responsive design** - Adapts to different screen sizes
+
+### **Backend**
+- **Java 23** - Latest LTS features
+- **Maven** - Dependency management & build
+- **JDBC** - Database connectivity
+- **MVC Pattern** - Clean code architecture
+
+### **Database**
+- **MySQL 8.0** - Relational database
+- **Connection pooling** - Optimized performance
+- **Transaction management** - Data consistency
+- **Schema: `onestopuiu`** - Organized data structure
+
+---
+
+## 📁 **Project Structure**
+
+```
+OneStopUIU/
+├── 📂 src/main/java/com/example/onestopuiu/
+│   ├── 🎯 OneStopUIUApplication.java      # Main application entry
+│   ├── 📂 controller/                      # UI Controllers (MVC)
+│   │   ├── LoginController.java           # User authentication
+│   │   ├── AdminDashboardController.java  # Admin interface
+│   │   ├── CanteenViewController.java     # Food ordering
+│   │   └── MyOrdersController.java        # Order tracking
+│   ├── 📂 model/                          # Data Models
+│   │   ├── User.java                      # User entity
+│   │   ├── FoodItem.java                  # Food item entity
+│   │   └── FoodOrder.java                 # Order entity
+│   ├── 📂 dao/                            # Data Access Layer
+│   │   ├── UserDAO.java                   # User operations
+│   │   ├── FoodItemDAO.java               # Food item operations
+│   │   └── FoodOrderDAO.java              # Order operations
+│   └── 📂 util/                           # Utilities
+│       ├── DatabaseConnection.java        # DB connection
+│       └── ImageCache.java                # Image optimization
+├── 📂 src/main/resources/                 # Resources
+│   └── 📂 com/example/onestopuiu/
+│       ├── *.fxml                         # UI layouts
+│       ├── styles.css                     # Styling
+│       └── 📂 images/                     # Application images
+└── 📋 pom.xml                            # Maven configuration
+```
+
+---
+
+## 🎪 **PRESENTATION HIGHLIGHTS**
+
+### **🎯 What to Show:**
+1. **Login System** - Demonstrate different user roles
+2. **Customer Flow** - Browse menu → Add to cart → Place order → Track status
+3. **Admin Dashboard** - Real-time analytics, inventory management
+4. **Seller Interface** - Product management, order fulfillment
+5. **Database Integration** - Live data updates, stock management
+6. **Error Handling** - Insufficient stock, invalid inputs
+7. **UI/UX Design** - Clean, minimal, responsive interface
+
+### **🎪 Demo Scenario:**
+1. **Start as Customer** → Order coffee and sandwich
+2. **Switch to Admin** → View dashboard, manage inventory
+3. **Show Seller View** → Manage products, view orders
+4. **Demonstrate Features** → Real-time updates, stock validation
+5. **Show Database** → Live data changes, order history
+
+---
+
+## 🛠️ **TECHNICAL SETUP**
+
+### **Prerequisites**
+- ☕ **Java 23** (JDK)
+- 🗄️ **MySQL 8.0** 
+- 🔧 **Maven 3.8+**
+- 💻 **IntelliJ IDEA 2025.1** (recommended)
+
+### **Database Setup**
+```sql
+-- Create database
+CREATE DATABASE onestopuiu;
+
+-- Import demo data (automatic on first run)
+-- Run: PresentationSetup.main() for demo data
+```
+
+### **Environment Variables**
+```bash
+JAVA_HOME=C:\Program Files\Java\jdk-23
+MAVEN_HOME=C:\Program Files\Apache\maven
+```
+
+---
+
+## 🔧 **TROUBLESHOOTING**
+
+### **Common Issues & Solutions**
+
+| **Issue** | **Solution** |
+|-----------|--------------|
+| JavaFX modules not found | Use provided run configurations |
+| Database connection failed | Check MySQL service, credentials |
+| Compilation errors | Run `mvnw clean compile` |
+| IntelliJ not recognizing project | Reimport Maven project |
+
+### **Quick Fixes**
+```bash
+# Clean and rebuild
+.\mvnw.cmd clean compile
+
+# Reset demo data
+.\mvnw.cmd exec:java -Dexec.mainClass="com.example.onestopuiu.util.PresentationSetup"
+
+# Force refresh IntelliJ
+File → Reload Gradle/Maven Projects
+```
+
+---
+
+## 🎯 **PROJECT HIGHLIGHTS**
+
+### **🏆 Technical Excellence**
+- ✅ **Modern Java 23** with latest features
+- ✅ **Clean MVC architecture** for maintainability  
+- ✅ **Responsive JavaFX UI** with FXML
+- ✅ **Robust database design** with proper relationships
+- ✅ **Error handling & validation** throughout
+- ✅ **Resource management** with automatic cleanup
+
+### **🎨 Design Excellence**
+- ✅ **Minimal, clean UI** with consistent styling
+- ✅ **Intuitive user experience** for all roles
+- ✅ **Professional color scheme** 
+- ✅ **Responsive layouts** that adapt to content
+- ✅ **Clear navigation** and user feedback
+
+### **🚀 Performance Features**
+- ✅ **Efficient database queries** with prepared statements
+- ✅ **Image caching** for better performance
+- ✅ **Connection pooling** for database optimization
+- ✅ **Background processing** for smooth UI
+- ✅ **Memory management** with proper resource cleanup
+
+---
+
+## 📞 **SUPPORT & CONTACT**
+
+**Project Team:** UIU Computer Science Students  
+**Institution:** United International University (UIU)  
+**Presentation Date:** October 8, 2025  
+
+---
+
+## 🏆 **FINAL NOTES FOR PRESENTATION**
+
+> **OneStopUIU** demonstrates proficiency in:
+> - **Object-Oriented Programming** with Java
+> - **Database Design & Management** with MySQL
+> - **User Interface Development** with JavaFX
+> - **Software Architecture** with MVC pattern
+> - **Project Management** with Maven
+> - **Version Control** with Git
+
+**🎯 Ready for demonstration! Good luck with your presentation! 🎉**
 ---
 ---
 

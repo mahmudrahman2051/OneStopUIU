@@ -16,8 +16,7 @@ public class DatabaseConnection {
             System.out.println("[Database] MySQL JDBC Driver registered successfully");
         } catch (ClassNotFoundException e) {
             System.err.println("[Database] Failed to register MySQL JDBC driver: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Failed to register MySQL JDBC driver", e);
+            System.err.println("[Database] Application will use fallback authentication");
         }
     }
 
@@ -34,7 +33,7 @@ public class DatabaseConnection {
             System.err.println("[Database] Error message: " + e.getMessage());
             System.err.println("[Database] SQL State: " + e.getSQLState());
             System.err.println("[Database] Error Code: " + e.getErrorCode());
-            e.printStackTrace();
+            System.err.println("[Database] Application will continue with fallback authentication");
             throw new RuntimeException("Failed to connect to database", e);
         }
     }
@@ -48,7 +47,6 @@ public class DatabaseConnection {
                 }
             } catch (SQLException e) {
                 System.err.println("[Database] Error closing connection: " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }

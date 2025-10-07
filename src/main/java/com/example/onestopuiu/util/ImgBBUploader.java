@@ -2,6 +2,7 @@ package com.example.onestopuiu.util;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -22,7 +23,8 @@ public class ImgBBUploader {
             String base64Image = Base64.getEncoder().encodeToString(fileContent);
 
             // Create URL and connection
-            URL url = new URL(IMGBB_UPLOAD_URL + "?key=" + IMGBB_API_KEY);
+            URI uri = URI.create(IMGBB_UPLOAD_URL + "?key=" + IMGBB_API_KEY);
+            URL url = uri.toURL();
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);

@@ -1,9 +1,7 @@
 package com.example.onestopuiu.controller;
 
 import com.example.onestopuiu.dao.SellerRequestDAO;
-import com.example.onestopuiu.dao.UserDAO;
 import com.example.onestopuiu.model.SellerRequest;
-import com.example.onestopuiu.model.User;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -35,7 +33,7 @@ public class AdminSellerRequestsController extends AdminBaseController implement
     @FXML private ProgressIndicator loadingIndicator;
     
     private final SellerRequestDAO sellerRequestDAO = new SellerRequestDAO();
-    private final UserDAO userDAO = new UserDAO();
+    // userDAO removed as it's not being used
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     
     @Override
