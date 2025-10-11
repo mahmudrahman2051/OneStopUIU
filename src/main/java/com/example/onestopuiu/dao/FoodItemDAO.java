@@ -49,6 +49,7 @@ public class FoodItemDAO implements DAO<FoodItem> {
             
             while (rs.next()) {
                 count++;
+                String imagePath = rs.getString("image");
                 System.out.println("Reading food item #" + count + ":");
                 System.out.println("  ID: " + rs.getInt("id"));
                 System.out.println("  Name: " + rs.getString("name"));
@@ -56,6 +57,7 @@ public class FoodItemDAO implements DAO<FoodItem> {
                 System.out.println("  Category: " + rs.getString("category"));
                 System.out.println("  Available: " + rs.getBoolean("available"));
                 System.out.println("  Stock: " + rs.getInt("stock_quantity"));
+                System.out.println("  Image Path: '" + imagePath + "'");
                 
                 FoodItem item = new FoodItem(
                     rs.getInt("id"),
@@ -64,7 +66,7 @@ public class FoodItemDAO implements DAO<FoodItem> {
                     rs.getString("description"),
                     rs.getString("category"),
                     rs.getBoolean("available"),
-                    rs.getString("image"),
+                    imagePath,
                     rs.getInt("stock_quantity")
                 );
                 foodItems.add(item);

@@ -20,6 +20,7 @@
     <HBox alignment="CENTER_LEFT" spacing="20">
         <Button onAction="#handleBack" text="← Back" styleClass="back-button"/>
         <Label fx:id="welcomeLabel" styleClass="welcome-label" HBox.hgrow="ALWAYS"/>
+        <Button onAction="#handleRefresh" text="🔄 Refresh" styleClass="header-button"/>
         <Button onAction="#handleLogout" text="Logout" styleClass="secondary-button"/>
     </HBox>
 

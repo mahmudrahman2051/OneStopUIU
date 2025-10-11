@@ -258,6 +258,29 @@ ALTER TABLE `users`
 --
 
 --
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) NOT NULL,
+  `transaction_id` varchar(255) NOT NULL,
+  `payment_method` enum('CARD','MOBILE_BANKING','CASH_ON_DELIVERY') NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `status` enum('PENDING','PROCESSING','COMPLETED','FAILED','REFUNDED') DEFAULT 'PENDING',
+  `payment_details` text DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `transaction_id` (`transaction_id`),
+  KEY `order_id` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Constraints for dumped tables
+--
+
+--
 -- Constraints for table `food_orders`
 --
 ALTER TABLE `food_orders`
@@ -275,6 +298,13 @@ ALTER TABLE `food_order_items`
 --
 ALTER TABLE `seller_requests`
   ADD CONSTRAINT `seller_requests_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `payments`
+--
+ALTER TABLE `payments`
+  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `food_orders` (`id`);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

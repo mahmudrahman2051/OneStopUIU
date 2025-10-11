@@ -327,4 +327,124 @@ public class FoodOrderDAO implements DAO<FoodOrder> {
         }
         return 0;
     }
+
+    public void updateOrderStatus(int orderId, String status) throws SQLException {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                 "UPDATE food_orders SET status = ? WHERE id = ?")) {
+            
+            stmt.setString(1, status);
+            stmt.setInt(2, orderId);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Order not found with ID: " + orderId);
+            }
+        }
+    }
+
+    // Safe deletion method that handles foreign key constraints
+    public boolean safeDeleteOrdersForUser(int userId) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false); // Start transaction
+            
+            // First, get all orders for this user
+            List<Integer> orderIds = new ArrayList<>();
+            try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT id FROM food_orders WHERE user_id = ?")) {
+                stmt.setInt(1, userId);
+                ResultSet rs = stmt.executeQuery();
+                while (rs.next()) {
+                    orderIds.add(rs.getInt("id"));
+                }
+            }
+            
+            // Delete order items first (child records)
+            for (int orderId : orderIds) {
+                try (PreparedStatement stmt = conn.prepareStatement(
+                    "DELETE FROM food_order_items WHERE order_id = ?")) {
+                    stmt.setInt(1, orderId);
+                    stmt.executeUpdate();
+                }
+            }
+            
+            // Then delete the orders (parent records)
+            try (PreparedStatement stmt = conn.prepareStatement(
+                "DELETE FROM food_orders WHERE user_id = ?")) {
+                stmt.setInt(1, userId);
+                stmt.executeUpdate();
+            }
+            
+            conn.commit();
+            return true;
+            
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // Delete a single order safely
+    public boolean safeDeleteOrder(int orderId) throws SQLException {
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false); // Start transaction
+            
+            // First delete order items
+            try (PreparedStatement stmt = conn.prepareStatement(
+                "DELETE FROM food_order_items WHERE order_id = ?")) {
+                stmt.setInt(1, orderId);
+                stmt.executeUpdate();
+            }
+            
+            // Then delete the order
+            try (PreparedStatement stmt = conn.prepareStatement(
+                "DELETE FROM food_orders WHERE id = ?")) {
+                stmt.setInt(1, orderId);
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected == 0) {
+                    throw new SQLException("Order not found with ID: " + orderId);
+                }
+            }
+            
+            conn.commit();
+            return true;
+            
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw e;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 } 

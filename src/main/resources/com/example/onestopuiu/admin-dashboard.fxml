@@ -56,6 +56,8 @@
                                styleClass="button" prefWidth="200"/>
                         <Button onAction="#handleViewFoodOrders" text="View Food Orders" 
                                styleClass="button" prefWidth="200"/>
+                        <Button onAction="#handleManageOrders" text="Manage Orders" 
+                               styleClass="button" prefWidth="200"/>
                         <Button onAction="#handleGenerateFoodReport" text="Generate Food Report" 
                                styleClass="button" prefWidth="200"/>
                     </VBox>

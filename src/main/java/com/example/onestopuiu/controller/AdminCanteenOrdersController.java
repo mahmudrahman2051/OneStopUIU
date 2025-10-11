@@ -9,17 +9,21 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.geometry.Rectangle2D;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class AdminCanteenOrdersController extends AdminBaseController {
+public class AdminCanteenOrdersController implements Initializable {
+    @FXML private Label welcomeLabel;
     @FXML private TableView<FoodOrder> pendingOrdersTable;
     @FXML private TableView<FoodOrder> completedOrdersTable;
     @FXML private ProgressIndicator loadingIndicator;
@@ -41,11 +45,23 @@ public class AdminCanteenOrdersController extends AdminBaseController {
 
     private final FoodOrderDAO foodOrderDAO = new FoodOrderDAO();
     private final UserDAO userDAO = new UserDAO();
+    private User currentUser;
 
     @Override
-    protected void onInitialize() {
+    public void initialize(URL location, ResourceBundle resources) {
+        // Set default welcome message
+        if (welcomeLabel != null) {
+            welcomeLabel.setText("Welcome, Admin!");
+        }
         setupColumns();
         loadOrders();
+    }
+
+    public void initData(User user) {
+        this.currentUser = user;
+        if (welcomeLabel != null && user != null) {
+            welcomeLabel.setText("Welcome, " + user.getUsername() + "!");
+        }
     }
 
     private void setupColumns() {
@@ -126,13 +142,27 @@ public class AdminCanteenOrdersController extends AdminBaseController {
             List<FoodOrder> allOrders = foodOrderDAO.getAll();
             System.out.println("Total food orders loaded: " + allOrders.size());
             
+            // Debug: Print all orders and their statuses
+            for (FoodOrder order : allOrders) {
+                System.out.println("Order ID: " + order.getId() + ", Status: '" + order.getStatus() + "', User ID: " + order.getUserId() + ", Total: " + order.getTotal());
+            }
+            
             List<FoodOrder> pendingOrders = allOrders.stream()
-                .filter(order -> "pending".equalsIgnoreCase(order.getStatus()))
+                .filter(order -> {
+                    String status = order.getStatus();
+                    boolean isPending = status != null && (status.equalsIgnoreCase("pending") || status.equalsIgnoreCase("PENDING"));
+                    System.out.println("Order " + order.getId() + " - Status: '" + status + "' - Is pending: " + isPending);
+                    return isPending;
+                })
                 .collect(Collectors.toList());
             System.out.println("Pending orders: " + pendingOrders.size());
             
             List<FoodOrder> completedOrders = allOrders.stream()
-                .filter(order -> "completed".equalsIgnoreCase(order.getStatus()))
+                .filter(order -> {
+                    String status = order.getStatus();
+                    boolean isCompleted = status != null && (status.equalsIgnoreCase("completed") || status.equalsIgnoreCase("COMPLETED"));
+                    return isCompleted;
+                })
                 .collect(Collectors.toList());
             System.out.println("Completed orders: " + completedOrders.size());
 
@@ -176,11 +206,30 @@ public class AdminCanteenOrdersController extends AdminBaseController {
             stage.setMaximized(true);
             stage.centerOnScreen();
 
-            AdminDashboardController controller = fxmlLoader.getController();
-            controller.initData(currentUser);
+            // Pass user data back to dashboard if available
+            Object controller = fxmlLoader.getController();
+            if (controller instanceof AdminDashboardController && currentUser != null) {
+                ((AdminDashboardController) controller).initData(currentUser);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             showError("Error", "Could not load admin dashboard: " + e.getMessage());
         }
+    }
+
+    private void showError(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    private void showInformation(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 } 

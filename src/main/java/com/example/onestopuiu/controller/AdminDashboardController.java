@@ -166,6 +166,11 @@ public class AdminDashboardController extends AdminBaseController implements Ini
     }
 
     @FXML
+    protected void handleManageOrders() {
+        loadView("admin-orders-view.fxml");
+    }
+
+    @FXML
     protected void handleGenerateFoodReport() {
         try {
             StringBuilder report = new StringBuilder();

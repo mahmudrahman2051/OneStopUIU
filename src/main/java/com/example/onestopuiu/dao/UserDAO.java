@@ -135,4 +135,31 @@ public class UserDAO implements DAO<User> {
         }
         return Optional.empty();
     }
+
+    public boolean deleteUserByUsername(String username) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("DELETE FROM users WHERE username = ?")) {
+            
+            stmt.setString(1, username);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean changeUserRole(int userId, String newRole) {
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE users SET role = ? WHERE id = ?")) {
+            
+            stmt.setString(1, newRole);
+            stmt.setInt(2, userId);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 } 

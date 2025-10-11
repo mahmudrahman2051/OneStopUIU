@@ -14,8 +14,17 @@ public abstract class CustomerBaseController {
         this.currentUser = user;
         if (welcomeLabel != null && user != null) {
             welcomeLabel.setText("Welcome, " + user.getUsername() + "!");
+        } else if (welcomeLabel != null && user == null) {
+            welcomeLabel.setText("Welcome, Guest!");
         }
-        onInitialize();
+        
+        // Call subclass initialization
+        try {
+            onInitialize();
+        } catch (Exception e) {
+            System.err.println("[CustomerBaseController] Error in onInitialize: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     protected abstract void onInitialize();

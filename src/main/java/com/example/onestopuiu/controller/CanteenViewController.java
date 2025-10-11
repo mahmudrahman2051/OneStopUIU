@@ -63,10 +63,41 @@ public class CanteenViewController extends CustomerBaseController {
         filterComboBox.setItems(FXCollections.observableArrayList("All", "breakfast", "Snacks", "lunch"));
         filterComboBox.setValue("All");
         
-        // Initialize cart items
+        // Initialize cart items (empty initially)
         cartItems = FXCollections.observableArrayList();
+        
+        // Setup tables and listeners
+        setupCartTable();
+        setupFilterListener();
+        
+        // Don't load menu here - wait for user data
+    }
+
+    @Override
+    protected void onInitialize() {
+        // This is called after initData sets the currentUser
+        if (currentUser == null) {
+            showError("Error", "No user data available");
+            return;
+        }
+
+        // Load cart items from CartManager
+        loadCartFromManager();
+        
+        // Update total amount
+        updateTotalAmount();
+        
+        // Load menu items (this will run in background)
+        loadMenu();
+    }
+
+    private void loadCartFromManager() {
+        // Clear existing cart items
+        cartItems.clear();
+        
+        // Load cart items from CartManager
         ObservableList<Object> savedCartItems = cartManager.getCanteenCartItems();
-        if (savedCartItems != null) {
+        if (savedCartItems != null && !savedCartItems.isEmpty()) {
             for (Object item : savedCartItems) {
                 if (item instanceof CartItem) {
                     cartItems.add((CartItem) item);
@@ -74,76 +105,43 @@ public class CanteenViewController extends CustomerBaseController {
             }
         }
         
-        // Calculate total amount
-        totalAmount = cartItems.stream()
-                .mapToDouble(CartItem::getTotal)
-                .sum();
-        updateTotalAmount();
-        
-        // Setup tables
-        setupCartTable();
-        setupFilterListener();
-    }
-
-    @Override
-    protected void onInitialize() {
-        if (currentUser == null) {
-            showError("Error", "No user data available");
-            return;
-        }
-
-        if (cartManager.getCanteenCartItems() != null) {
-            cartItems.clear();
-            for (Object item : cartManager.getCanteenCartItems()) {
-                if (item instanceof CartItem) {
-                    cartItems.add((CartItem) item);
-                }
-            }
-        }
+        // Get saved total amount
         totalAmount = cartManager.getCanteenTotalAmount();
-        updateTotalAmount();
-        
-        // Load menu items
-        loadMenu();
     }
 
     @Override
     public void initData(User user) {
         super.initData(user);
-
-        if (currentUser != null) {
-
-            if (cartManager.getCanteenCartItems() != null) {
-                cartItems.clear();
-                for (Object item : cartManager.getCanteenCartItems()) {
-                    if (item instanceof CartItem) {
-                        cartItems.add((CartItem) item);
-                    }
-                }
-            }
-            totalAmount = cartManager.getCanteenTotalAmount();
-            updateTotalAmount();
-
-
-            loadMenu();
-        }
+        // The rest is handled in onInitialize() which is called by super.initData()
     }
 
 
     private void displayFoodItems(List<FoodItem> items) {
+        // Clear existing items
         menuItemsGrid.getChildren().clear();
+        
+        if (items == null || items.isEmpty()) {
+            return;
+        }
+
         int columnCount = 3; // Number of items per row
         int row = 0;
         int col = 0;
 
+        // Create cards for each item
         for (FoodItem item : items) {
-            VBox itemCard = createFoodItemCard(item);
-            menuItemsGrid.add(itemCard, col, row);
-            
-            col++;
-            if (col >= columnCount) {
-                col = 0;
-                row++;
+            try {
+                VBox itemCard = createFoodItemCard(item);
+                menuItemsGrid.add(itemCard, col, row);
+                
+                col++;
+                if (col >= columnCount) {
+                    col = 0;
+                    row++;
+                }
+            } catch (Exception e) {
+                System.err.println("Error creating card for item: " + item.getName() + " - " + e.getMessage());
+                // Continue with other items
             }
         }
     }
@@ -163,8 +161,16 @@ public class CanteenViewController extends CustomerBaseController {
         imageView.setFitHeight(120);
         imageView.setPreserveRatio(true);
 
+        // Debug: Print image path
+        System.out.println("[CanteenView] Loading image for " + item.getName() + 
+                          ": '" + item.getImage() + "'");
+
         // Use ImageCache to load image efficiently
-        ImageCache.getImage(item.getImage(), true, image -> imageView.setImage(image));
+        ImageCache.getImage(item.getImage(), true, image -> {
+            imageView.setImage(image);
+            System.out.println("[CanteenView] Image loaded for " + item.getName() + 
+                              ": " + (image != null ? "SUCCESS" : "FAILED"));
+        });
 
         // Name
         Label nameLabel = new Label(item.getName());
@@ -287,23 +293,37 @@ public class CanteenViewController extends CustomerBaseController {
             loadingIndicator.setVisible(true);
         }
 
+        // Run database operation in background thread
         new Thread(() -> {
             try {
                 String category = filterComboBox.getValue();
                 final List<FoodItem> items;
 
                 if (category == null || category.equals("All")) {
-                    items = foodItemDAO.getAll();
+                    items = foodItemDAO.getAvailableItems(); // Only get available items
                 } else {
                     items = foodItemDAO.getByCategory(category);
+                    // Filter to only available items
+                    items.removeIf(item -> !item.isAvailable() || item.getStockQuantity() <= 0);
                 }
 
+                // Debug: Print loaded items and their stock
+                System.out.println("DEBUG: Loaded " + items.size() + " items from database:");
+                for (FoodItem item : items) {
+                    System.out.println("DEBUG: " + item.getName() + " - Stock: " + item.getStockQuantity());
+                }
+
+                // Update UI on JavaFX thread
                 Platform.runLater(() -> {
                     try {
                         if (items == null || items.isEmpty()) {
-                            showInformation("No Items", "No food items available at the moment");
+                            showInformation("No Items", "No food items available in this category");
+                            menuItemsGrid.getChildren().clear();
+                        } else {
+                            displayFoodItems(items);
                         }
-                        displayFoodItems(items);
+                    } catch (Exception e) {
+                        showError("Display Error", "Error displaying menu items: " + e.getMessage());
                     } finally {
                         if (loadingIndicator != null) {
                             loadingIndicator.setVisible(false);
@@ -312,7 +332,7 @@ public class CanteenViewController extends CustomerBaseController {
                 });
             } catch (SQLException e) {
                 Platform.runLater(() -> {
-                    showError("Data Loading Error", "Failed to load menu items: " + e.getMessage());
+                    showError("Database Error", "Failed to load menu items: " + e.getMessage());
                     if (loadingIndicator != null) {
                         loadingIndicator.setVisible(false);
                     }
@@ -323,31 +343,49 @@ public class CanteenViewController extends CustomerBaseController {
     }
 
     public void addToCart(FoodItem item) {
-        System.out.println("Adding to cart: " + item.getName());
+        // Check if item is available and has stock
+        if (!item.isAvailable() || item.getStockQuantity() <= 0) {
+            showError("Unavailable", item.getName() + " is currently out of stock.");
+            return;
+        }
+
+        // Look for existing item in cart
         for (CartItem cartItem : cartItems) {
             if (cartItem.getFoodItemId() == item.getId()) {
                 if (cartItem.getQuantity() < item.getStockQuantity()) {
                     cartItem.incrementQuantity();
                     cartTable.refresh();
                     updateTotalAmount();
+                    showInformation("Added to Cart", item.getName() + " quantity increased!");
                 } else {
-                    showError("Error", "Not enough stock available");
+                    showError("Stock Limit", "Cannot add more. Only " + item.getStockQuantity() + " available.");
                 }
                 return;
             }
         }
         
+        // Add new item to cart
         cartItems.add(new CartItem(item));
+        cartTable.refresh();
         updateTotalAmount();
-        System.out.println("Cart updated, new size: " + cartItems.size());
+        showInformation("Added to Cart", item.getName() + " added to your cart!");
     }
 
     private void updateTotalAmount() {
         totalAmount = cartItems.stream()
             .mapToDouble(item -> item.getQuantity() * item.getUnitPrice())
             .sum();
+        
+        // Update CartManager with proper type conversion
+        ObservableList<Object> cartObjects = FXCollections.observableArrayList();
+        cartObjects.addAll(cartItems);
+        cartManager.setCanteenCartItems(cartObjects);
         cartManager.setCanteenTotalAmount(totalAmount);
-        totalAmountLabel.setText(String.format("%.2f TK", totalAmount));
+        
+        // Update UI
+        if (totalAmountLabel != null) {
+            totalAmountLabel.setText(String.format("%.2f TK", totalAmount));
+        }
     }
 
     @FXML
@@ -357,31 +395,24 @@ public class CanteenViewController extends CustomerBaseController {
             return;
         }
 
-        if (showConfirmation("Place Order", "Are you sure you want to place this order?")) {
-            try {
-                FoodOrder order = new FoodOrder();
-                order.setUserId(currentUser.getId());
-                
-                List<FoodOrderItem> orderItems = new ArrayList<>();
-                for (CartItem item : cartItems) {
-                    FoodOrderItem orderItem = new FoodOrderItem();
-                    orderItem.setFoodItemId(item.getFoodItemId());
-                    orderItem.setQuantity(item.getQuantity());
-                    orderItem.setUnitPrice(item.getUnitPrice());
-                    orderItems.add(orderItem);
-                }
-                
-                order.setItems(orderItems);
-                foodOrderDAO.save(order);
-                
-                cartManager.clearCanteenCart();
-                cartItems.clear();
-                updateTotalAmount();
-                showInformation("Success", "Your order has been placed successfully!");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                showError("Error", "Failed to place order: " + e.getMessage());
-            }
+        // Navigate to payment page instead of directly placing order
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/onestopuiu/payment-view.fxml"));
+            Parent root = loader.load();
+            
+            SimplePaymentController paymentController = loader.getController();
+            paymentController.setCurrentUser(currentUser);
+            paymentController.setCartItems(cartItems);
+            
+            Stage stage = (Stage) cartTable.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Payment - OneStopUIU");
+            stage.show();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error", "Failed to open payment page: " + e.getMessage());
         }
     }
 
@@ -391,11 +422,9 @@ public class CanteenViewController extends CustomerBaseController {
     }
 
     @FXML
-    @SuppressWarnings("unchecked")
     protected void handleBack() {
-        // Save cart state before navigating back
-        cartManager.setCanteenCartItems((ObservableList<Object>) (Object) cartItems);
-        cartManager.setCanteenTotalAmount(totalAmount);
+        // Save cart state before navigating back (already done in updateTotalAmount)
+        updateTotalAmount(); // Ensure cart is saved
         loadView("section-selector.fxml");
     }
 
@@ -406,6 +435,14 @@ public class CanteenViewController extends CustomerBaseController {
 
     private void loadView(String fxmlFile) {
         try {
+            // Debug: Check current user before navigation
+            if (currentUser == null) {
+                System.err.println("[CanteenView] Warning: currentUser is null when navigating to " + fxmlFile);
+                showError("Session Error", "User session has expired. Please login again.");
+                loadView("login.fxml");
+                return;
+            }
+            
             URL fxmlUrl = getClass().getResource("/com/example/onestopuiu/" + fxmlFile);
             if (fxmlUrl == null) {
                 throw new IOException("Cannot find FXML file: " + fxmlFile);
@@ -429,6 +466,8 @@ public class CanteenViewController extends CustomerBaseController {
             // Pass user data to the next controller
             Object controller = fxmlLoader.getController();
             if (controller instanceof CustomerBaseController) {
+                System.out.println("[CanteenView] Passing user data to " + controller.getClass().getSimpleName() + 
+                                 ": " + (currentUser != null ? currentUser.getUsername() : "null"));
                 ((CustomerBaseController) controller).initData(currentUser);
             }
         } catch (IOException e) {

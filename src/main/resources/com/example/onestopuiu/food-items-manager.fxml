@@ -75,6 +75,14 @@
                     <Label styleClass="form-label" text="Stock Quantity:" />
                     <TextField fx:id="stockQuantityField" styleClass="form-field" />
 
+                    <!-- Quick Restock Section -->
+                    <Label styleClass="form-label" text="Quick Restock:" />
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <TextField fx:id="restockQuantityField" promptText="Add quantity" styleClass="form-field" prefWidth="120" />
+                        <Button fx:id="quickRestockButton" onAction="#handleQuickRestock" text="+ Add Stock" styleClass="restock-button" />
+                    </HBox>
+                    <Label fx:id="restockStatusLabel" styleClass="form-label" textFill="green" />
+
                     <Label styleClass="form-label" text="Image:" />
                     <HBox spacing="10">
                         <TextField fx:id="imagePathField" editable="false" styleClass="form-field" HBox.hgrow="ALWAYS" />

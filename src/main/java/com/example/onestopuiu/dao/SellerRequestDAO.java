@@ -89,10 +89,11 @@ public class SellerRequestDAO implements DAO<SellerRequest> {
     public void update(SellerRequest request) throws SQLException {
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                 "UPDATE seller_requests SET status = ? WHERE id = ?")) {
+                 "UPDATE seller_requests SET status = ?, reason = ? WHERE id = ?")) {
             
             stmt.setString(1, request.getStatus());
-            stmt.setInt(2, request.getId());
+            stmt.setString(2, request.getReason());
+            stmt.setInt(3, request.getId());
             
             stmt.executeUpdate();
         }

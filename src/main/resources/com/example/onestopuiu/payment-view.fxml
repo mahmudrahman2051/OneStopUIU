@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.onestopuiu.controller.SimplePaymentController" styleClass="simple-payment-container" spacing="30" alignment="CENTER">
+   
+   <!-- Title and Total -->
+   <VBox alignment="CENTER" spacing="10" styleClass="payment-header-simple">
+      <Label styleClass="simple-title" text="Complete Your Order" />
+      <Label fx:id="totalAmountLabel" styleClass="simple-total" text="Total: ৳0.00" />
+   </VBox>
+
+   <!-- Simple Payment Options -->
+   <VBox spacing="20" styleClass="payment-options" alignment="CENTER" maxWidth="400">
+      
+      <!-- Cash on Delivery - Default and Simple -->
+      <Button fx:id="codButton" onAction="#handleCashOnDelivery" styleClass="payment-option-button" text="� Cash on Delivery" maxWidth="350" />
+      
+      <!-- Pickup from Canteen -->
+      <Button fx:id="pickupButton" onAction="#handlePickupFromCanteen" styleClass="payment-option-button" text="🏫 Pickup from Canteen" maxWidth="350" />
+      
+      <!-- Mobile Banking -->
+      <Button fx:id="mobileButton" onAction="#handleMobileBanking" styleClass="payment-option-button" text="📱 Mobile Banking (bKash/Nagad)" maxWidth="350" />
+      
+      <!-- Card Payment -->
+      <Button fx:id="cardButton" onAction="#handleCardPayment" styleClass="payment-option-button" text="💳 Credit/Debit Card" maxWidth="350" />
+   </VBox>
+
+   <!-- Simple Form Fields (Initially Hidden) -->
+   <VBox fx:id="paymentForm" spacing="15" styleClass="simple-form" alignment="CENTER" visible="false" maxWidth="350">
+      
+      <!-- Mobile Banking Fields -->
+      <VBox fx:id="mobileFields" spacing="10" visible="false">
+         <ComboBox fx:id="mobileProviderCombo" promptText="Select Provider" styleClass="simple-field" />
+         <TextField fx:id="mobileNumberField" promptText="Mobile Number (01XXXXXXXXX)" styleClass="simple-field" />
+      </VBox>
+      
+      <!-- Card Fields -->
+      <VBox fx:id="cardFields" spacing="10" visible="false">
+         <TextField fx:id="cardNumberField" onKeyReleased="#formatCardNumber" promptText="Card Number" styleClass="simple-field" />
+         <TextField fx:id="cardHolderNameField" promptText="Cardholder Name" styleClass="simple-field" />
+         <HBox spacing="10">
+            <TextField fx:id="expiryDateField" onKeyReleased="#formatExpiryDate" promptText="MM/YY" styleClass="simple-field" HBox.hgrow="ALWAYS" />
+            <TextField fx:id="cvvField" promptText="CVV" styleClass="simple-field" HBox.hgrow="ALWAYS" />
+         </HBox>
+      </VBox>
+      
+      <!-- Delivery Address (for all methods) -->
+      <TextField fx:id="deliveryAddressField" promptText="Delivery Address" styleClass="simple-field" />
+      <TextField fx:id="phoneNumberField" promptText="Contact Number" styleClass="simple-field" />
+   </VBox>
+
+   <!-- Status and Progress -->
+   <VBox spacing="10" alignment="CENTER">
+      <ProgressIndicator fx:id="progressIndicator" prefHeight="30" prefWidth="30" visible="false" />
+      <Label fx:id="statusLabel" styleClass="simple-status" />
+   </VBox>
+
+   <!-- Action Buttons -->
+   <HBox spacing="20" alignment="CENTER" styleClass="button-row">
+      <Button fx:id="backButton" onAction="#handleBack" styleClass="simple-back-button" text="← Back" />
+      <Button fx:id="confirmButton" onAction="#handleConfirmPayment" styleClass="simple-confirm-button" text="Confirm Order" visible="false" />
+   </HBox>
+
+   <padding>
+      <Insets top="40" bottom="40" left="40" right="40" />
+   </padding>
+</VBox>

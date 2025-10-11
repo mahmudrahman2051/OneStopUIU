@@ -45,9 +45,16 @@ public class SectionSelectorController extends CustomerBaseController {
     public void initData(User user) {
         this.currentUser = user;
         
+        // Check if user is null
+        if (user == null) {
+            System.err.println("[SectionSelector] Warning: User data is null, redirecting to login");
+            loadSection("login.fxml");
+            return;
+        }
+        
         // Set personalized welcome message
         String timeOfDay = getTimeOfDay();
-        welcomeLabel.setText(timeOfDay + ", " + user.getUsername() + "!");
+        welcomeLabel.setText(timeOfDay + ", " + user.getUsername() + " 👋");
         
         // If user is already a seller or admin, hide the become seller button and label
         if (user.getRole().equals("SELLER") || user.getRole().equals("ADMIN")) {
@@ -212,6 +219,14 @@ public class SectionSelectorController extends CustomerBaseController {
 
     private void loadSection(String fxmlFile) {
         try {
+            // Debug: Check current user before navigation
+            if (currentUser == null) {
+                System.err.println("[SectionSelector] Warning: currentUser is null when navigating to " + fxmlFile);
+                showAlert(Alert.AlertType.ERROR, "Session Error", "User session has expired. Please login again.");
+                loadSection("login.fxml");
+                return;
+            }
+            
             String fxmlPath = "/com/example/onestopuiu/" + fxmlFile;
             URL resourceUrl = getClass().getResource(fxmlPath);
 
@@ -224,7 +239,24 @@ public class SectionSelectorController extends CustomerBaseController {
 
             Scene scene = new Scene(fxmlLoader.load(), screenBounds.getWidth(), screenBounds.getHeight());
 
-            Stage stage = (Stage) canteenButton.getScene().getWindow();
+            // Try to get stage from multiple sources
+            Stage stage = null;
+            try {
+                if (canteenButton != null && canteenButton.getScene() != null) {
+                    stage = (Stage) canteenButton.getScene().getWindow();
+                } else if (welcomeLabel != null && welcomeLabel.getScene() != null) {
+                    stage = (Stage) welcomeLabel.getScene().getWindow();
+                } else if (becomeSellerButton != null && becomeSellerButton.getScene() != null) {
+                    stage = (Stage) becomeSellerButton.getScene().getWindow();
+                }
+            } catch (Exception e) {
+                System.err.println("[SectionSelector] Error getting stage: " + e.getMessage());
+            }
+            
+            if (stage == null) {
+                throw new IOException("Could not find application stage");
+            }
+            
             stage.setScene(scene);
             
             // Configure stage properties
@@ -235,11 +267,14 @@ public class SectionSelectorController extends CustomerBaseController {
             // Pass user data to the next controller
             Object controller = fxmlLoader.getController();
             if (controller instanceof CustomerBaseController) {
+                System.out.println("[SectionSelector] Passing user data to " + controller.getClass().getSimpleName() + 
+                                 ": " + (currentUser != null ? currentUser.getUsername() : "null"));
                 ((CustomerBaseController) controller).initData(currentUser);
             }
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading FXML: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load view: " + e.getMessage());
         }
     }
 }

@@ -67,20 +67,40 @@ public class ImageCache {
         // Load default image first
         imageConsumer.accept(DEFAULT_FOOD_IMAGE);
         
-        // Load actual image in background at original size (no scaling)
+        // Load actual image in background
         imageLoadExecutor.submit(() -> {
             try {
-                // Background loading with background loading flag set to true
-                // We don't specify dimensions so it loads at original resolution
-                Image image = new Image(imageUrl, 0, 0, true, true, true);
+                Image loadedImage = null;
+                
+                // Check if this is a local resource path (starts with /com/example/onestopuiu/uploads/)
+                if (imageUrl.startsWith("/com/example/onestopuiu/uploads/")) {
+                    // Convert to local file path and create file URL
+                    String localPath = LocalImageUploader.getLocalPath(imageUrl);
+                    java.io.File imageFile = new java.io.File(localPath);
+                    
+                    if (imageFile.exists()) {
+                        System.out.println("[ImageCache] Loading local image: " + imageFile.getAbsolutePath());
+                        loadedImage = new Image(imageFile.toURI().toString(), 0, 0, true, true, true);
+                    } else {
+                        System.err.println("[ImageCache] Local image file not found: " + localPath);
+                    }
+                } else {
+                    // Try to load as external URL
+                    System.out.println("[ImageCache] Loading external image: " + imageUrl);
+                    loadedImage = new Image(imageUrl, 0, 0, true, true, true);
+                }
                 
                 // Only cache and update image if loading was successful
-                if (!image.isError()) {
-                    imageCache.put(imageUrl, image);
-                    javafx.application.Platform.runLater(() -> imageConsumer.accept(image));
+                if (loadedImage != null && !loadedImage.isError()) {
+                    final Image finalImage = loadedImage;
+                    imageCache.put(imageUrl, finalImage);
+                    javafx.application.Platform.runLater(() -> imageConsumer.accept(finalImage));
+                } else {
+                    System.err.println("[ImageCache] Failed to load image: " + imageUrl);
                 }
             } catch (Exception e) {
-                System.err.println("Error loading image from " + imageUrl + ": " + e.getMessage());
+                System.err.println("[ImageCache] Error loading image from " + imageUrl + ": " + e.getMessage());
+                e.printStackTrace();
             }
         });
     }

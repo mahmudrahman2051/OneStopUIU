@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.onestopuiu.controller.AdminOrdersController" styleClass="root" spacing="20">
+   
+   <!-- Header -->
+   <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="20">
+      <Button fx:id="backButton" onAction="#handleBack" styleClass="secondary-button" text="← Back" />
+      <Label styleClass="page-title" text="Order Management" />
+      <Region HBox.hgrow="ALWAYS" />
+      <Button fx:id="refreshButton" onAction="#handleRefresh" styleClass="primary-button" text="🔄 Refresh" />
+   </HBox>
+
+   <!-- Filter Options -->
+   <HBox styleClass="filter-bar" spacing="15" alignment="CENTER_LEFT">
+      <Label text="Search Customer:" styleClass="filter-label" />
+      <TextField fx:id="customerSearchField" promptText="Enter customer name..." styleClass="filter-combo" onKeyReleased="#handleSearchCustomer" />
+      <Label text="Filter by Status:" styleClass="filter-label" />
+      <ComboBox fx:id="statusFilterCombo" promptText="All Orders" styleClass="filter-combo" />
+      <Label text="Filter by Type:" styleClass="filter-label" />
+      <ComboBox fx:id="typeFilterCombo" promptText="All Types" styleClass="filter-combo" />
+      <Button fx:id="applyFilterButton" onAction="#handleApplyFilter" styleClass="filter-button" text="Apply Filter" />
+      <Region HBox.hgrow="ALWAYS" />
+      <Button onAction="#handleDeleteSelectedCustomer" styleClass="danger-button" text="🗑️ Delete Customer" />
+      <Button onAction="#handleAddPaymentRecord" styleClass="primary-button" text="➕ Add Payment Record" />
+   </HBox>
+
+   <!-- Orders Table -->
+   <TableView fx:id="ordersTable" styleClass="orders-table" VBox.vgrow="ALWAYS">
+      <columns>
+         <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="80" />
+         <TableColumn fx:id="customerColumn" text="Customer" prefWidth="120" />
+         <TableColumn fx:id="itemsColumn" text="Items" prefWidth="200" />
+         <TableColumn fx:id="totalColumn" text="Total" prefWidth="80" />
+         <TableColumn fx:id="paymentMethodColumn" text="Payment" prefWidth="120" />
+         <TableColumn fx:id="statusColumn" text="Status" prefWidth="100" />
+         <TableColumn fx:id="typeColumn" text="Type" prefWidth="100" />
+         <TableColumn fx:id="contactColumn" text="Contact" prefWidth="120" />
+         <TableColumn fx:id="addressColumn" text="Address/Info" prefWidth="200" />
+         <TableColumn fx:id="orderDateColumn" text="Order Date" prefWidth="150" />
+         <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="150" />
+      </columns>
+   </TableView>
+
+   <!-- Order Details Panel -->
+   <VBox fx:id="orderDetailsPanel" styleClass="details-panel" spacing="10" visible="false">
+      <Label styleClass="details-title" text="Order Details" />
+      <ScrollPane styleClass="details-scroll" maxHeight="300">
+         <VBox fx:id="orderDetailsContent" spacing="10" />
+      </ScrollPane>
+      <HBox spacing="10" alignment="CENTER">
+         <Button fx:id="markReadyButton" onAction="#handleMarkReady" styleClass="success-button" text="✅ Mark Ready" />
+         <Button fx:id="markCompletedButton" onAction="#handleMarkCompleted" styleClass="success-button" text="🚀 Mark Completed" />
+         <Button fx:id="cancelOrderButton" onAction="#handleCancelOrder" styleClass="cancel-button" text="❌ Cancel Order" />
+         <Button fx:id="hideDetailsButton" onAction="#handleHideDetails" styleClass="secondary-button" text="Hide Details" />
+      </HBox>
+   </VBox>
+
+   <padding>
+      <Insets top="20" bottom="20" left="20" right="20" />
+   </padding>
+</VBox>
